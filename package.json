@@ -1,0 +1,15 @@
+{
+  "name": "web2-lab2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Luka Lulic",
+  "license": "ISC",
+  "description": "WEB2 Labos 2",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}
