@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Test</title>
+  <script src="https://www.google.com/recaptcha/api.js"></script>
+</head>
+<body>
+<h2>Login Form</h2>
+
+<label for="toggle">Enable reCAPTCHA:</label>
+<input type="checkbox" id="toggle" onclick="toggleCaptchaAndAction()">
+
+<form id="loginForm" action="/broken-login" method="post"> <!-- Default action is /broken-login -->
+  <div>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+  </div>
+  <div>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+  </div>
+  <!-- reCAPTCHA div, initially hidden -->
+  <div id="recaptcha" class="g-recaptcha" data-sitekey="6Lff7nkqAAAAAE1itj9SYayvb9cy4RvkhgsXLhqJ" style="display: none;"></div>
+  <button type="submit">Login</button>
+</form>
+
+<script>
+  // Function to toggle the reCAPTCHA visibility and form action
+  function toggleCaptchaAndAction() {
+    const toggle = document.getElementById("toggle");
+    const recaptcha = document.getElementById("recaptcha");
+    const form = document.getElementById("loginForm");
+
+    if (toggle.checked) {
+      form.action = "/login";
+      recaptcha.style.display = "block";
+    } else {
+      form.action = "/broken-login";
+      recaptcha.style.display = "none";
+    }
+  }
+
+  // Set initial state: toggle is unchecked, recaptcha is hidden, form action is /broken-login
+  document.getElementById("toggle").checked = false;
+</script>
+</body>
+</html>
