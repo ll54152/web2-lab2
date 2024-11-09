@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "setup": "npm init -y && npm install express sqlite3 body-parser"
   },
   "keywords": [],
   "author": "Luka Lulic",
   "license": "ISC",
   "description": "WEB2 Labos 2",
   "dependencies": {
-    "express": "^4.21.1"
+    "body-parser": "^1.20.3",
+    "express": "^4.21.1",
+    "sqlite3": "^5.1.7"
   }
 }
