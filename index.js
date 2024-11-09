@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database(':memory:');
 
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 db.serialize(() => {
@@ -22,6 +23,10 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+app.get('/login', (req, res) => {
+    res.sendFile(__dirname + '/login.html');
+});
+
 
 app.listen(port, () => {
     console.log(`Server radi na http://localhost:${port}`);
@@ -30,7 +35,6 @@ app.listen(port, () => {
 app.post('/sql', (req, res) => {
     const { username, password } = req.body;
 
-    // **OPASNO** - SQL Injection ranjivo
     const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
 
     db.all(query, (err, rows) => {
@@ -64,61 +68,75 @@ app.post('/sqlfix', (req, res) => {
     });
 });
 
-app.get('/toggle', (req, res) => {
-    vulnerable = !vulnerable;
-    res.send(`SQL Injection vulnerability is now ${vulnerable ? 'enabled' : 'disabled'}`);
-});
 
 app.get('/home', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-let authenticated = "none";
+const failedAttempts = {};
+const blockedIPs = {};
 
-app.get('/sensitive', (req, res) => {
-    res.send('ADMIN!');
-});
+app.use((req, res, next) => {
+    const ip = req.ip;
 
-app.get('/sensitive-secure', (req, res) => {
-    if (authenticated === "admin") {
-        res.send('ADMIN!');
-    } else if(authenticated === "user"){
-        res.send('USER!');
-    }
-    else {
-        res.status(403).send('Pristup zabranjen: Niste prijavljeni.');
+    if (blockedIPs[ip] && blockedIPs[ip] > Date.now()) {
+        res.status(403).send('IP adresa je blokirana. Pokušajte ponovno kasnije.');
+    } else {
+        next();
     }
 });
 
-app.post('/login', (req, res) => {
+
+app.post('/login', async (req, res) => {
+
+
+        const { username, password} = req.body;
+        const ip = req.ip;
+
+
+            const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
+            db.get(query, [username, password], (err, row) => {
+                if (err) {
+                    res.send('Query error');
+                    return;
+                }
+                if (row) {
+                    delete failedAttempts[ip];
+                    res.send(`Welcome, ${row.username}!`);
+                } else {
+                    failedAttempts[ip] = (failedAttempts[ip] || 0) + 1;
+                    if (failedAttempts[ip] >= 3) {
+                        blockedIPs[ip] = Date.now() + 3 * 60 * 1000; // Block for 3 minutes
+                        res.status(403).send('Too many failed attempts. IP address is blocked for 3 minutes.');
+                    } else {
+                        res.send('Invalid input');
+                    }
+                }
+            });
+    }
+);
+
+
+
+
+
+app.post('/broken-login', (req, res) => {
     const { username, password } = req.body;
 
-    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
-
-    db.get(query, [username, password], (err, row) => {
+    const query = `SELECT * FROM users WHERE username = ?`;
+    db.get(query, [username], (err, row) => {
         if (err) {
             res.send('Greška u upitu');
             return;
         }
         if (row) {
-            if(row.role === "admin"){
-                authenticated = "admin";
+            if (row.password === password) {
+                res.send(`Dobrodošao, ${row.username}!`);
+            } else {
+                res.send('Pogrešna lozinka');
             }
-
-            if(row.role === "user"){
-                authenticated = "user";
-            }
-
-            res.send(`Dobrodošao, ${row.username}!`);
         } else {
-            res.send('Neispravno korisničko ime ili lozinka');
+            res.send('Pogrešno korisničko ime');
         }
     });
-
-
-});
-
-app.post('/logout', (req, res) => {
-    authenticated = "none";
-    res.send('Odjava uspješna!');
 });

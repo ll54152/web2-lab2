@@ -5,15 +5,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "setup": "npm init -y && npm install express sqlite3 body-parser"
+    "setup": "npm init -y && npm install express sqlite3 body-parser neonctl express-validator node-fetch"
   },
   "keywords": [],
   "author": "Luka Lulic",
   "license": "ISC",
   "description": "WEB2 Labos 2",
   "dependencies": {
+    "@google-cloud/recaptcha-enterprise": "^5.11.0",
+    "@neondatabase/serverless": "^0.10.3",
     "body-parser": "^1.20.3",
     "express": "^4.21.1",
+    "express-validator": "^7.2.0",
+    "neonctl": "^2.4.0",
+    "node-fetch": "^3.3.2",
     "sqlite3": "^5.1.7"
   }
 }
