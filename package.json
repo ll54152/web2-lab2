@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "setup": "npm init -y && npm install express sqlite3 body-parser axios"
+    "setup": "npm init -y && npm install express sqlite3 body-parser axios express-session"
   },
   "keywords": [],
   "author": "Luka Lulic",
@@ -15,7 +15,7 @@
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",
     "express": "^4.21.1",
+    "express-session": "^1.18.1",
     "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {}
+  }
 }
