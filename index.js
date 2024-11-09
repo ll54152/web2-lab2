@@ -48,9 +48,12 @@ app.get('/login', (req, res) => {
     res.sendFile(__dirname + '/login.html');
 });
 
-
 app.listen(port, () => {
     console.log(`Server radi na http://localhost:${port}`);
+});
+
+app.get('/sql', (req, res) => {
+    res.sendFile(__dirname + '/sql.html');
 });
 
 app.post('/sql', (req, res) => {

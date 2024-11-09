@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Search</title>
+</head>
+<body>
+<h1>Login</h1>
+<!-- Toggle switch to choose the endpoint -->
+<label for="toggle">Use Secure Query</label>
+<input type="checkbox" id="toggle">
+
+<!-- Search form -->
+<form id="searchForm" method="POST" action="/sql">
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username" required>
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" required>
+
+  <button type="submit">Login</button>
+</form>
+
+<script>
+  // JavaScript to change the form action based on the toggle state
+  const toggle = document.getElementById('toggle');
+  const form = document.getElementById('searchForm');
+
+  toggle.addEventListener('change', () => {
+    if (toggle.checked) {
+      form.action = '/sqlfix';
+    } else {
+      form.action = '/sql';
+    }
+  });
+</script>
+</body>
+</html>
