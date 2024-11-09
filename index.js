@@ -87,34 +87,50 @@ app.use((req, res, next) => {
 });
 
 
+
+
+const axios = require('axios');
+const RECAPTCHA_SECRET_KEY = '6Lff7nkqAAAAAK2NrBOjuePpOW5ZtNJqC3ITTvq4';
+
 app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const ip = req.ip;
 
+    const recaptchaResponse = req.body['g-recaptcha-response'];
+    const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaResponse}&remoteip=${ip}`;
 
-        const { username, password} = req.body;
-        const ip = req.ip;
-
-
-            const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
-            db.get(query, [username, password], (err, row) => {
-                if (err) {
-                    res.send('Query error');
-                    return;
-                }
-                if (row) {
-                    delete failedAttempts[ip];
-                    res.send(`Welcome, ${row.username}!`);
-                } else {
-                    failedAttempts[ip] = (failedAttempts[ip] || 0) + 1;
-                    if (failedAttempts[ip] >= 3) {
-                        blockedIPs[ip] = Date.now() + 3 * 60 * 1000; // Block for 3 minutes
-                        res.status(403).send('Too many failed attempts. IP address is blocked for 3 minutes.');
-                    } else {
-                        res.send('Invalid input');
-                    }
-                }
-            });
+    try {
+        const recaptchaResult = await axios.post(recaptchaUrl);
+        if (!recaptchaResult.data.success) {
+            return res.send('CAPTCHA verification failed');
+        }
+    } catch (error) {
+        return res.send('Error validating CAPTCHA');
     }
-);
+
+    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
+    db.get(query, [username, password], (err, row) => {
+        if (err) {
+            res.send('Query error');
+            return;
+        }
+        if (row) {
+            delete failedAttempts[ip];
+            res.send(`Welcome, ${row.username}!`);
+        } else {
+            failedAttempts[ip] = (failedAttempts[ip] || 0) + 1;
+            if (failedAttempts[ip] >= 3) {
+                blockedIPs[ip] = Date.now() + 3 * 60 * 1000; // Block for 3 minutes
+                res.status(403).send('Too many failed attempts. IP address is blocked for 3 minutes.');
+            } else {
+                res.send('Invalid input');
+            }
+        }
+    });
+});
+
+
+
 
 
 
