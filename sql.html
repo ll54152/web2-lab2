@@ -23,17 +23,37 @@
     .container {
       background-color: #fff;
       width: 100%;
-      max-width: 400px;
+      max-width: 1200px;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
+      display: flex;
+      gap: 20px;
+    }
+
+    .description-box {
+      background-color: #e9ecef;
+      padding: 20px;
+      border-radius: 8px;
+      width: 70%;
+      text-align: justify;
+    }
+
+    .description-box h2 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .form-box {
+      width: 60%;
     }
 
     h1 {
       font-size: 24px;
       color: #333;
       margin-bottom: 20px;
+      text-align: center;
     }
 
     label {
@@ -78,28 +98,90 @@
     button:hover {
       background-color: #0056b3;
     }
+
+
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .user-table th, .user-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .user-table th {
+      background-color: #f2f2f2;
+      color: #333;
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>SQL Injection</h1>
 
-  <form id="searchForm" method="POST" action="/sql">
-    <div class="checkbox-container">
-      <label for="toggle">Enable Secure SQL Query</label>
-      <input type="checkbox" id="toggle">
-    </div>
-    <div>
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
-    </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-    </div>
+  <div class="description-box">
+    <h2>SQL Injection Info</h2>
+    <p>Ovo je primjer SQL umetanja (SQL Injection).
+      Kada je zaštita isključena, korisnik može kao korisničko ime poslati neki upit koji će rezultirati istinom a za lozinku može upisati bilo što.
+      U takvom slučaju, korisnik će dobiti cijeli sadržaj tablice nad kojom je upit rađen.
+      Ukoliko je zaštita uključena, tada napad SQL umetanjem neće uspjeti budući da su podaci parametrizirani.</p>
+    <br>
+    <p>Neki od primjera istinitosne vrijednosti u SQL-u su:</p>
+    <p>' OR 1=1;--</p>
+    <p>'OR 1=1;--'</p>
+    <br>
+    <p>Ispod je prikazan sadržaj baze:</p>
+    <table class="user-table">
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Role</th>
+      </tr>
+      <tr>
+        <td>MarkoC</td>
+        <td>123456789</td>
+        <td>admin</td>
+      </tr>
+      <tr>
+        <td>IvanL</td>
+        <td>qwertzuiop</td>
+        <td>user</td>
+      </tr>
+      <tr>
+        <td>LukaL</td>
+        <td>asdfghjkl</td>
+        <td>user</td>
+      </tr>
+      <tr>
+        <td>ZvonkoG</td>
+        <td>yxcvbnm</td>
+        <td>user</td>
+      </tr>
+    </table>
+  </div>
 
-    <button type="submit">Login</button>
-  </form>
+  <div class="form-box">
+    <h1>SQL Injection</h1>
+
+    <form id="searchForm" method="POST" action="/sql">
+      <div class="checkbox-container">
+        <label for="toggle">Enable Secure SQL Query</label>
+        <input type="checkbox" id="toggle">
+      </div>
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
 </div>
 
 <script>

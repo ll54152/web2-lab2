@@ -24,17 +24,37 @@
     .container {
       background-color: #fff;
       width: 100%;
-      max-width: 400px;
+      max-width: 1200px;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
+      display: flex;
+      gap: 20px;
+    }
+
+    .description-box {
+      background-color: #e9ecef;
+      padding: 20px;
+      border-radius: 8px;
+      width: 70%;
+      text-align: justify;
+    }
+
+    .description-box h2 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .form-box {
+      width: 60%;
     }
 
     h1 {
       font-size: 24px;
       color: #333;
       margin-bottom: 20px;
+      text-align: center;
     }
 
     label {
@@ -84,29 +104,87 @@
       margin-top: 15px;
       display: none;
     }
+
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .user-table th, .user-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .user-table th {
+      background-color: #f2f2f2;
+      color: #333;
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>Broken Authentication</h1>
-
-  <div class="checkbox-container">
-    <label for="toggle">Enable Secure Auth</label>
-    <input type="checkbox" id="toggle" onclick="toggleCaptchaAndAction()">
+  <div class="description-box">
+    <h2>Authentication Info</h2>
+    <p>Ovo je primjer loše autentifikacije (Broken Authentication).
+      Kada je zaštita isključena, tada će sustav točno napisati jeli pogrešna lozinka ili korisničko ime.
+      Kada uključimo zaštitu, sustav nam neće dati nikakve informacije jeli kriva lozinka ili korisničko ime.
+      Također ukoliko korisnik tri puta upiše krivu lozinku ili korisničko ime, IP adresa će biti blokirana na tri minute.
+      Nakon tri minute ukoliko korisnik ponovno krive podatke upiše, ponovno će biti blokiran na tri minute.
+      Ako točne podatke upiše, sustav će ga prihvatiti. Također valja napomenuti kako je implementirana i reCAPTCH-a ukoliko je zaštita uključena.</p>
+    <br>
+    <p>Ispod je prikazan sadržaj baze:</p>
+    <table class="user-table">
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Role</th>
+      </tr>
+      <tr>
+        <td>MarkoC</td>
+        <td>123456789</td>
+        <td>admin</td>
+      </tr>
+      <tr>
+        <td>IvanL</td>
+        <td>qwertzuiop</td>
+        <td>user</td>
+      </tr>
+      <tr>
+        <td>LukaL</td>
+        <td>asdfghjkl</td>
+        <td>user</td>
+      </tr>
+      <tr>
+        <td>ZvonkoG</td>
+        <td>yxcvbnm</td>
+        <td>user</td>
+      </tr>
+    </table>
   </div>
 
-  <form id="loginForm" action="/broken-login" method="post">
-    <div>
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
+  <div class="form-box">
+    <h1>Broken Authentication</h1>
+
+    <div class="checkbox-container">
+      <label for="toggle">Enable Secure Auth</label>
+      <input type="checkbox" id="toggle" onclick="toggleCaptchaAndAction()">
     </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-    </div>
-    <div id="recaptcha" class="g-recaptcha" data-sitekey="6Lff7nkqAAAAAE1itj9SYayvb9cy4RvkhgsXLhqJ"></div>
-    <button type="submit">Login</button>
-  </form>
+
+    <form id="loginForm" action="/broken-login" method="post">
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div id="recaptcha" class="g-recaptcha" data-sitekey="6Lff7nkqAAAAAE1itj9SYayvb9cy4RvkhgsXLhqJ"></div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
 </div>
 
 <script>
