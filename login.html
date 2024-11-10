@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Test</title>
+  <title>Login</title>
   <script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body>
-<h2>Login Form</h2>
+<h1>Login</h1>
 
-<label for="toggle">Enable reCAPTCHA:</label>
+<label for="toggle">Enable Secure Auth:</label>
 <input type="checkbox" id="toggle" onclick="toggleCaptchaAndAction()">
 
 <form id="loginForm" action="/broken-login" method="post">
@@ -39,8 +39,8 @@
       recaptcha.style.display = "none";
     }
   }
-
   document.getElementById("toggle").checked = false;
+
 </script>
 </body>
 </html>
