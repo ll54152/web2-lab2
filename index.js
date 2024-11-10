@@ -21,6 +21,8 @@ db.serialize(() => {
     db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, role TEXT)');
     db.run('INSERT INTO users (username, password, role) VALUES ("MarkoC", "123456789", "admin")');
     db.run('INSERT INTO users (username, password, role) VALUES ("IvanL", "qwertzuiop", "user")');
+    db.run('INSERT INTO users (username, password, role) VALUES ("LukaL", "asdfghjkl", "user")');
+    db.run('INSERT INTO users (username, password, role) VALUES ("ZvonkoG", "yxcvbnm", "user")');
 });
 
 app.use((req, res, next) => {
@@ -29,7 +31,7 @@ app.use((req, res, next) => {
     req.session.blockedIPs = req.session.blockedIPs || {};
 
     if (req.session.blockedIPs[ip] && req.session.blockedIPs[ip] > Date.now()) {
-        res.status(403).send('IP adresa je blokirana. Pokušajte ponovno kasnije.');
+        res.status(403).send('IP address has been blocked. Please try again later.');
     } else {
         next();
     }
@@ -58,13 +60,13 @@ app.post('/sql', (req, res) => {
 
     db.all(query, (err, rows) => {
         if (err) {
-            res.send('Greška u upitu');
+            res.send('Query error');
             return;
         }
         if (rows.length > 0) {
             res.json(rows);
         } else {
-            res.send('Neispravno korisničko ime ili lozinka');
+            res.send('Username or password is incorrect');
         }
     });
 });
@@ -76,13 +78,13 @@ app.post('/sqlfix', (req, res) => {
 
     db.get(query, [username, password], (err, row) => {
         if (err) {
-            res.send('Greška u upitu');
+            res.send('Query error');
             return;
         }
         if (row) {
-            res.send(`Dobrodošao, ${row.username}!`);
+            res.send(`Welcome, ${row.username}!`);
         } else {
-            res.send('Neispravno korisničko ime ili lozinka');
+            res.send('Username or password is incorrect');
         }
     });
 });
@@ -137,7 +139,7 @@ app.post('/login', async (req, res) => {
                 req.session.blockedIPs[ip] = Date.now() + 3 * 60 * 1000;
                 res.status(403).send('Too many failed attempts. IP address is blocked for 3 minutes.');
             } else {
-                res.send('Invalid input');
+                res.send('Username or password is incorrect');
             }
         }
     });
@@ -150,21 +152,21 @@ app.post('/broken-login', (req, res) => {
     const query = `SELECT * FROM users WHERE username = ?`;
     db.get(query, [username], (err, row) => {
         if (err) {
-            res.send('Greška u upitu');
+            res.send('Query error');
             return;
         }
 
         if (!row) {
-            res.send('Pogrešno korisničko ime');
+            res.send('Incorrect username');
             return;
         }
 
         if (row.password !== password) {
-            res.send('Pogrešno lozinka');
+            res.send('Incorrect password');
             return;
         }
 
-        res.send(`Dobrodošao, ${row.username}!`);
+        res.send(`Welcome, ${row.username}!`);
     });
 });
 
