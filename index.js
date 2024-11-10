@@ -9,12 +9,11 @@ const db = new sqlite3.Database(':memory:');
 const session = require('express-session');
 
 app.use(session({
-    secret: 'tajna', // Ovdje koristite jaku tajnu
+    secret: 'tajna',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 30 * 60 * 1000 } // Sesija traje 30 minuta
+    cookie: { maxAge: 30 * 60 * 1000 }
 }));
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -35,10 +34,6 @@ app.use((req, res, next) => {
         next();
     }
 });
-
-
-
-
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -127,7 +122,6 @@ app.post('/login', async (req, res) => {
         }
 
         if (row) {
-            // Reset failed attempts on successful login
             delete req.session.failedAttempts[ip];
             req.session.user = {
                 username: row.username,
@@ -140,7 +134,7 @@ app.post('/login', async (req, res) => {
 
             if (req.session.failedAttempts[ip] >= 3) {
                 req.session.blockedIPs = req.session.blockedIPs || {};
-                req.session.blockedIPs[ip] = Date.now() + 3 * 60 * 1000; // Block for 3 minutes
+                req.session.blockedIPs[ip] = Date.now() + 3 * 60 * 1000;
                 res.status(403).send('Too many failed attempts. IP address is blocked for 3 minutes.');
             } else {
                 res.send('Invalid input');
@@ -148,10 +142,6 @@ app.post('/login', async (req, res) => {
         }
     });
 });
-
-
-
-
 
 
 app.post('/broken-login', (req, res) => {
@@ -163,14 +153,21 @@ app.post('/broken-login', (req, res) => {
             res.send('Greška u upitu');
             return;
         }
+
         if (row) {
-            if (row.password === password) {
+            if (row.username !== username){
+                res.send('Pogrešno korisničko ime');
+            }
+
+            if (row.password !== password){
+                res.send('Pogrešno lozinka');
+            }
+
+            if (row.password === password && row.username === username) {
                 res.send(`Dobrodošao, ${row.username}!`);
-            } else {
-                res.send('Pogrešna lozinka');
             }
         } else {
-            res.send('Pogrešno korisničko ime');
+            res.send('Pogrešno uneseni podaci');
         }
     });
 });

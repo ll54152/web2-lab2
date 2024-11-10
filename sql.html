@@ -7,11 +7,9 @@
 </head>
 <body>
 <h1>Login</h1>
-<!-- Toggle switch to choose the endpoint -->
 <label for="toggle">Use Secure Query</label>
 <input type="checkbox" id="toggle">
 
-<!-- Search form -->
 <form id="searchForm" method="POST" action="/sql">
   <label for="username">Username:</label>
   <input type="text" id="username" name="username" required>
@@ -23,7 +21,6 @@
 </form>
 
 <script>
-  // JavaScript to change the form action based on the toggle state
   const toggle = document.getElementById('toggle');
   const form = document.getElementById('searchForm');
 
