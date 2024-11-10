@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database(':memory:');
 
+app.set('view engine', 'ejs');
+
 const session = require('express-session');
 
 app.use(session({
@@ -31,7 +33,7 @@ app.use((req, res, next) => {
     req.session.blockedIPs = req.session.blockedIPs || {};
 
     if (req.session.blockedIPs[ip] && req.session.blockedIPs[ip] > Date.now()) {
-        res.status(403).send('IP address has been blocked. Please try again later.');
+        res.status(403).render('error', { errorMessage: 'IP address has been blocked. Please try again later.' });
     } else {
         next();
     }
@@ -60,13 +62,13 @@ app.post('/sql', (req, res) => {
 
     db.all(query, (err, rows) => {
         if (err) {
-            res.send('Query error');
+            res.render('error', { errorMessage: 'Query error' });
             return;
         }
         if (rows.length > 0) {
             res.json(rows);
         } else {
-            res.send('Username or password is incorrect');
+            res.render('error', { errorMessage: 'Username or password is incorrect' });
         }
     });
 });
@@ -78,13 +80,13 @@ app.post('/sqlfix', (req, res) => {
 
     db.get(query, [username, password], (err, row) => {
         if (err) {
-            res.send('Query error');
+            res.render('error', { errorMessage: 'Query error' });
             return;
         }
         if (row) {
-            res.send(`Welcome, ${row.username}!`);
+            res.render('success', { SuccessMessage: 'Welcome: ' + row.username });
         } else {
-            res.send('Username or password is incorrect');
+            res.render('error', { errorMessage: 'Username or password is incorrect' });
         }
     });
 });
@@ -110,16 +112,16 @@ app.post('/login', async (req, res) => {
     try {
         const recaptchaResult = await axios.post(recaptchaUrl);
         if (!recaptchaResult.data.success) {
-            return res.send('CAPTCHA verification failed');
+            res.render('error', { errorMessage: 'CAPTCHA verification failed' });
         }
     } catch (error) {
-        return res.send('Error validating CAPTCHA');
+        res.render('error', { errorMessage: 'Error validating CAPTCHA' });
     }
 
     const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
     db.get(query, [username, password], (err, row) => {
         if (err) {
-            res.send('Query error');
+            res.render('error', { errorMessage: 'Query error' });
             return;
         }
 
@@ -130,16 +132,16 @@ app.post('/login', async (req, res) => {
                 role: row.role
             };
 
-            res.send(`Welcome, ${row.username}!`);
+            res.render('success', { SuccessMessage: 'Welcome: ' + row.username });
         } else {
             req.session.failedAttempts[ip] = (req.session.failedAttempts[ip] || 0) + 1;
 
             if (req.session.failedAttempts[ip] >= 3) {
                 req.session.blockedIPs = req.session.blockedIPs || {};
                 req.session.blockedIPs[ip] = Date.now() + 3 * 60 * 1000;
-                res.status(403).send('Too many failed attempts. IP address is blocked for 3 minutes.');
+                res.status(403).render('error', { errorMessage: 'Too many failed attempts. IP address is blocked for 3 minutes.' });
             } else {
-                res.send('Username or password is incorrect');
+                res.render('error', { errorMessage: 'Username or password is incorrect' });
             }
         }
     });
@@ -152,29 +154,29 @@ app.post('/broken-login', (req, res) => {
     const query = `SELECT * FROM users WHERE username = ?`;
     db.get(query, [username], (err, row) => {
         if (err) {
-            res.send('Query error');
+            res.render('error', { errorMessage: 'Query error' });
             return;
         }
 
         if (!row) {
-            res.send('Incorrect username');
+            res.render('error', { errorMessage: 'Incorrect username' });
             return;
         }
 
         if (row.password !== password) {
-            res.send('Incorrect password');
+            res.render('error', { errorMessage: 'Incorrect password' });
             return;
         }
 
-        res.send(`Welcome, ${row.username}!`);
+        res.render('success', { SuccessMessage: 'Welcome: ' + row.username });
     });
 });
 
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.send('Error logging out');
+            res.render('error', { errorMessage: 'Error logging out' });
         }
-        res.send('Successfully logged out');
+        res.render('success', { SuccessMessage: 'Successfully logged out' });
     });
 });
