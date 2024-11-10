@@ -12,10 +12,10 @@ app.use(session({
     secret: 'tajna',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 30 * 60 * 1000 }
+    cookie: {maxAge: 30 * 60 * 1000}
 }));
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 db.serialize(() => {
     db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, role TEXT)');
@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/login', (req, res) => {
@@ -52,7 +52,7 @@ app.get('/sql', (req, res) => {
 });
 
 app.post('/sql', (req, res) => {
-    const { username, password } = req.body;
+    const {username, password} = req.body;
 
     const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
 
@@ -70,7 +70,7 @@ app.post('/sql', (req, res) => {
 });
 
 app.post('/sqlfix', (req, res) => {
-    const { username, password } = req.body;
+    const {username, password} = req.body;
 
     const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
 
@@ -96,7 +96,7 @@ const axios = require('axios');
 const RECAPTCHA_SECRET_KEY = '6Lff7nkqAAAAAK2NrBOjuePpOW5ZtNJqC3ITTvq4';
 
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const {username, password} = req.body;
     const ip = req.ip;
     const recaptchaResponse = req.body['g-recaptcha-response'];
     const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaResponse}&remoteip=${ip}`;
@@ -145,7 +145,7 @@ app.post('/login', async (req, res) => {
 
 
 app.post('/broken-login', (req, res) => {
-    const { username, password } = req.body;
+    const {username, password} = req.body;
 
     const query = `SELECT * FROM users WHERE username = ?`;
     db.get(query, [username], (err, row) => {
@@ -154,20 +154,16 @@ app.post('/broken-login', (req, res) => {
             return;
         }
 
-        if (row) {
-            if (row.username !== username){
-                res.send('Pogrešno korisničko ime');
-            }
+        if (row.username !== username) {
+            res.send('Pogrešno korisničko ime');
+        }
 
-            if (row.password !== password){
-                res.send('Pogrešno lozinka');
-            }
+        if (row.password !== password) {
+            res.send('Pogrešno lozinka');
+        }
 
-            if (row.password === password && row.username === username) {
-                res.send(`Dobrodošao, ${row.username}!`);
-            }
-        } else {
-            res.send('Pogrešno uneseni podaci');
+        if (row.password === password && row.username === username) {
+            res.send(`Dobrodošao, ${row.username}!`);
         }
     });
 });
