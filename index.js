@@ -154,17 +154,17 @@ app.post('/broken-login', (req, res) => {
             return;
         }
 
-        if (row.username !== username) {
+        if (!row) {
             res.send('Pogrešno korisničko ime');
+            return;
         }
 
         if (row.password !== password) {
             res.send('Pogrešno lozinka');
+            return;
         }
 
-        if (row.password === password && row.username === username) {
-            res.send(`Dobrodošao, ${row.username}!`);
-        }
+        res.send(`Dobrodošao, ${row.username}!`);
     });
 });
 
