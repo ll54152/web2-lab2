@@ -177,6 +177,7 @@ app.post('/logout', (req, res) => {
         if (err) {
             res.render('error', { errorMessage: 'Error logging out' });
         }
-        res.render('success', { SuccessMessage: 'Successfully logged out' });
+        res.sendFile(__dirname + '/index.html');
+
     });
 });
